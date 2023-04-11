@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         ErrorDTO error = new ErrorDTO();
         error.setTimestamp(new Date());
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        error.addError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         error.setPath(request.getServletPath());
 
         LOGGER.error("Error occurred", ex);

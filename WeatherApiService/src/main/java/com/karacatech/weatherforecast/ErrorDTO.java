@@ -1,20 +1,22 @@
 package com.karacatech.weatherforecast;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class ErrorDTO {
     private Date timestamp;
     private int status;
     private String path;
-    private String error;
+    private List<String> errors;
 
-    public ErrorDTO(Date timestamp, int status, String path, String error) {
+    public ErrorDTO(Date timestamp, int status, String path, List<String> errors) {
         this.timestamp = timestamp;
         this.status = status;
         this.path = path;
-        this.error = error;
+        this.errors = errors;
     }
+
 
     public ErrorDTO() {
     }
@@ -43,12 +45,16 @@ public class ErrorDTO {
         this.path = path;
     }
 
-    public String getError() {
-        return error;
+    public List<String> getErrors() {
+        return errors;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
+    }
+
+    public void addError(String message) {
+        this.errors.add(message);
     }
 
     @Override
@@ -56,12 +62,12 @@ public class ErrorDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ErrorDTO errorDTO = (ErrorDTO) o;
-        return status == errorDTO.status && Objects.equals(timestamp, errorDTO.timestamp) && Objects.equals(path, errorDTO.path) && Objects.equals(error, errorDTO.error);
+        return status == errorDTO.status && Objects.equals(timestamp, errorDTO.timestamp) && Objects.equals(path, errorDTO.path) && Objects.equals(errors, errorDTO.errors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, status, path, error);
+        return Objects.hash(timestamp, status, path, errors);
     }
 
     @Override
@@ -70,7 +76,7 @@ public class ErrorDTO {
                 "timestamp=" + timestamp +
                 ", status=" + status +
                 ", path='" + path + '\'' +
-                ", error='" + error + '\'' +
+                ", errors=" + errors +
                 '}';
     }
 }
