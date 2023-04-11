@@ -1,5 +1,6 @@
 package com.karacatech.weatherforecast;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -8,7 +9,7 @@ public class ErrorDTO {
     private Date timestamp;
     private int status;
     private String path;
-    private List<String> errors;
+    private List<String> errors = new ArrayList<>();
 
     public ErrorDTO(Date timestamp, int status, String path, List<String> errors) {
         this.timestamp = timestamp;
