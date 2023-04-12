@@ -6,7 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
@@ -24,21 +23,25 @@ public class Location {
 
     @Column(length = 128, nullable = false)
     @JsonProperty("city_name")
-    @NotBlank(message = "City name cannot be blank")
+    @NotNull(message = "City name cannot be null")
+    @Length(min = 3, max = 128, message = "City name must be between 3 and 128 characters")
     private String cityName;
 
     @Column(length = 128)
     @JsonProperty("region_name")
+    @Length(min = 3, max = 128, message = "Region name must be between 3 and 128 characters")
     private String regionName;
 
     @Column(length = 64, nullable = false)
     @JsonProperty("country_name")
-    @NotBlank(message = "Country name cannot be blank")
+    @NotNull(message = "Country name cannot be null")
+    @Length(min = 3, max = 64, message = "Country name must be between 3 and 64 characters")
     private String countryName;
 
     @Column(length = 2, nullable = false)
     @JsonProperty("country_code")
-    @NotBlank(message = "Country code cannot be blank")
+    @NotNull(message = "Country code cannot be null")
+    @Length(min = 2, max = 2, message = "Country code must be 2 characters")
     private String countryCode;
 
     private boolean enabled;

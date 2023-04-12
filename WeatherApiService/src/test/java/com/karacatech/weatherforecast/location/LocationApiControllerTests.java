@@ -128,6 +128,24 @@ public class LocationApiControllerTests {
     }
 
     @Test
+    public void testValidateRequestBodyAllFieldsInvalid() throws Exception {
+        Location location = new Location();
+
+        String bodyContent = objectMapper.writeValueAsString(location);
+
+        try {
+            mockMvc.perform(post(END_POINT_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(bodyContent))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testListShouldReturn204NoContent() throws Exception {
         Mockito.when(locationService.getAll())
                 .thenReturn(List.of());
