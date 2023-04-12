@@ -1,10 +1,8 @@
 package com.karacatech.weatherforecast.location;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karacatech.weatherforecast.common.Location;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,12 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
-import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -133,16 +131,18 @@ public class LocationApiControllerTests {
 
         String bodyContent = objectMapper.writeValueAsString(location);
 
-        try {
-            mockMvc.perform(post(END_POINT_PATH)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(bodyContent))
-                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MvcResult mvcResult = mockMvc.perform(post(END_POINT_PATH).contentType(MediaType.APPLICATION_JSON).content(bodyContent))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(responseBody).contains("Location code cannot be null");
+        assertThat(responseBody).contains("City name cannot be null");
+        assertThat(responseBody).contains("Country name cannot be null");
+        assertThat(responseBody).contains("Country code cannot be null");
     }
 
     @Test
