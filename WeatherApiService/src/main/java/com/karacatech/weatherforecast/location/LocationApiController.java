@@ -1,9 +1,7 @@
 package com.karacatech.weatherforecast.location;
 
 import com.karacatech.weatherforecast.common.Location;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +21,6 @@ public class LocationApiController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<Location> add(@RequestBody @Valid Location location) {
         Location addedLocation = locationService.add(location);
         URI uri = URI.create("api/v1/locations/" + addedLocation.getCode());

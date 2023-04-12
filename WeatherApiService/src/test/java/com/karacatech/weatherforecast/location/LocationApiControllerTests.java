@@ -1,5 +1,6 @@
 package com.karacatech.weatherforecast.location;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karacatech.weatherforecast.common.Location;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -78,6 +80,51 @@ public class LocationApiControllerTests {
                 .andExpect(jsonPath("$.country_name").value("United States of America"))
                 .andExpect(jsonPath("$.enabled").value(true))
                 .andDo(print());
+    }
+
+    @Test
+    public void testValidateRequestBodyLocationCode() throws Exception {
+        Location location = new Location();
+        location.setCityName("Ankara");
+        location.setRegionName("Ankara");
+        location.setCountryCode("TR");
+        location.setCountryName("Turkey");
+        location.setEnabled(true);
+
+        String bodyContent = objectMapper.writeValueAsString(location);
+
+        mockMvc.perform(post(END_POINT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bodyContent))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.errors[0]", is("Location code cannot be null")))
+                .andDo(print());
+    }
+
+    @Test
+    public void testValidateRequestBodyLocationCodeLength() throws Exception {
+        Location location = new Location();
+        location.setCode("");
+        location.setCityName("Ankara");
+        location.setRegionName("Ankara");
+        location.setCountryCode("TR");
+        location.setCountryName("Turkey");
+        location.setEnabled(true);
+
+        String bodyContent = objectMapper.writeValueAsString(location);
+
+        try {
+            mockMvc.perform(post(END_POINT_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(bodyContent))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.errors[0]", is("Location code must be between 3 and 12 characters")))
+                    .andDo(print());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

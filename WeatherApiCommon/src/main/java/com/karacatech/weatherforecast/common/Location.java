@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Objects;
 
@@ -15,9 +16,10 @@ import java.util.Objects;
 @Table(name = "locations")
 public class Location {
 
-    @Id
-    @NotBlank(message = "Location code cannot be blank")
     @Column(length = 12, nullable = false, unique = true)
+    @Id
+    @NotNull(message = "Location code cannot be null")
+    @Length(min = 3, max = 12, message = "Location code must be between 3 and 12 characters")
     private String code;
 
     @Column(length = 128, nullable = false)
