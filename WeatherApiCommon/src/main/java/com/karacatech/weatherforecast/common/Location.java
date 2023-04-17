@@ -2,10 +2,7 @@ package com.karacatech.weatherforecast.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
@@ -43,6 +40,10 @@ public class Location {
     @NotNull(message = "Country code cannot be null")
     @Length(min = 2, max = 2, message = "Country code must be 2 characters")
     private String countryCode;
+
+    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private RealtimeWeather realtimeWeather;
 
     private boolean enabled;
 
@@ -97,6 +98,7 @@ public class Location {
         this.enabled = enabled;
     }
 
+
     public boolean isTrashed() {
         return trashed;
     }
@@ -105,17 +107,25 @@ public class Location {
         this.trashed = trashed;
     }
 
+    public RealtimeWeather getRealtimeWeather() {
+        return realtimeWeather;
+    }
+
+    public void setRealtimeWeather(RealtimeWeather realtimeWeather) {
+        this.realtimeWeather = realtimeWeather;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Location location = (Location) o;
-        return enabled == location.enabled && trashed == location.trashed && Objects.equals(code, location.code) && Objects.equals(cityName, location.cityName) && Objects.equals(regionName, location.regionName) && Objects.equals(countryName, location.countryName) && Objects.equals(countryCode, location.countryCode);
+        return enabled == location.enabled && trashed == location.trashed && Objects.equals(code, location.code) && Objects.equals(cityName, location.cityName) && Objects.equals(regionName, location.regionName) && Objects.equals(countryName, location.countryName) && Objects.equals(countryCode, location.countryCode) && Objects.equals(realtimeWeather, location.realtimeWeather);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, cityName, regionName, countryName, countryCode, enabled, trashed);
+        return Objects.hash(code, cityName, regionName, countryName, countryCode, realtimeWeather, enabled, trashed);
     }
 
     @Override
@@ -126,6 +136,7 @@ public class Location {
                 ", regionName='" + regionName + '\'' +
                 ", countryName='" + countryName + '\'' +
                 ", countryCode='" + countryCode + '\'' +
+                ", realtimeWeather=" + realtimeWeather +
                 ", enabled=" + enabled +
                 ", trashed=" + trashed +
                 '}';
