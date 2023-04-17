@@ -1,4 +1,4 @@
-package com.karacatech.weatherforecast.geolocation;
+package com.karacatech.weatherforecast;
 
 import com.ip2location.IP2Location;
 import com.ip2location.IPResult;
@@ -31,7 +31,8 @@ public class GeolocationService {
                 throw new GeolocationException("Geolocation failed with status: " + result.getStatus());
             }
 
-            return new Location(result.getCity(), result.getRegion(), result.getCountryLong(), result.getCountryShort());
+            return new Location(result.getCity(), result.getRegion(), result.getCountryLong(),
+                    result.getCountryShort());
         } catch (IOException e) {
             throw new GeolocationException("Error querying IP database", e);
         }

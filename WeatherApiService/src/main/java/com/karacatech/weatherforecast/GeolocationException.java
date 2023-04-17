@@ -1,4 +1,4 @@
-package com.karacatech.weatherforecast.geolocation;
+package com.karacatech.weatherforecast;
 
 public class GeolocationException extends Throwable {
     public GeolocationException(String message) {
