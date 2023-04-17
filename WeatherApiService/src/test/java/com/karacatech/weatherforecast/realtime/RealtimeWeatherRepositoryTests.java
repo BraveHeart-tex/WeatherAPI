@@ -35,4 +35,26 @@ public class RealtimeWeatherRepositoryTests {
 
         assertThat(updatedRealtimeWeather.getHumidity()).isEqualTo(32);
     }
+
+    @Test
+    public void testFindByCountryCodeAndCityNotFound() {
+        String countryCode = "JP";
+        String city = "Tokyo";
+
+        RealtimeWeather realtimeWeather = repository.findByCountryCodeAndCity(countryCode, city);
+
+        assertThat(realtimeWeather).isNull();
+    }
+
+    @Test
+    public void testFindByCountryCodeAndCityFound() {
+        String countryCode = "US";
+        String city = "Boston";
+
+        RealtimeWeather realtimeWeather = repository.findByCountryCodeAndCity(countryCode, city);
+
+        assertThat(realtimeWeather).isNotNull();
+        assertThat(realtimeWeather.getLocation().getCountryCode()).isEqualTo(countryCode);
+        assertThat(realtimeWeather.getLocation().getCityName()).isEqualTo(city);
+    }
 }
