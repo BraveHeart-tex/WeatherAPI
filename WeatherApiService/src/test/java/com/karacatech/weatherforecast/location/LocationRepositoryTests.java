@@ -2,12 +2,14 @@ package com.karacatech.weatherforecast.location;
 
 import com.karacatech.weatherforecast.common.Location;
 
+import com.karacatech.weatherforecast.common.RealtimeWeather;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,5 +66,30 @@ public class LocationRepositoryTests {
         repository.trashByCode(code);
         Location location = repository.findByCode(code);
         assertThat(location).isNull();
+    }
+
+    @Test
+    public void testAddRealtimeWeatherData() {
+        String locationCode = "BOSTON_US";
+        Location location = repository.findByCode(locationCode);
+
+        RealtimeWeather realtimeWeather = location.getRealtimeWeather();
+
+        if (realtimeWeather == null) {
+            realtimeWeather = new RealtimeWeather();
+            realtimeWeather.setLocation(location);
+            location.setRealtimeWeather(realtimeWeather);
+        }
+
+        realtimeWeather.setTemperature(10);
+        realtimeWeather.setHumidity(60);
+        realtimeWeather.setPrecipitation(70);
+        realtimeWeather.setStatus("Sunny");
+        realtimeWeather.setWindSpeed(10);
+        realtimeWeather.setLastUpdated(new Date());
+
+        Location updatedLocation = repository.save(location);
+
+        assertThat(updatedLocation.getRealtimeWeather().getLocationCode()).isEqualTo(locationCode);
     }
 }

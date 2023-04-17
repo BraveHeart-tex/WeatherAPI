@@ -86,6 +86,7 @@ public class RealtimeWeather {
     }
 
     public void setLocation(Location location) {
+        this.locationCode = location.getCode();
         this.location = location;
     }
 }
