@@ -5,10 +5,12 @@ import com.ip2location.IPResult;
 import com.karacatech.weatherforecast.common.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+@Component
 @Service
 public class GeolocationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GeolocationService.class);

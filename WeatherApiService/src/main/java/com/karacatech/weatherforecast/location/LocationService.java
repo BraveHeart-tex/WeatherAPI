@@ -12,8 +12,8 @@ import java.util.List;
 public class LocationService {
     private final LocationRepository locationRepository;
 
-    @Autowired
     public LocationService(LocationRepository locationRepository) {
+        super();
         this.locationRepository = locationRepository;
     }
 
