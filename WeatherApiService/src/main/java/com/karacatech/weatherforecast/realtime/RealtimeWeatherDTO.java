@@ -1,19 +1,12 @@
-package com.karacatech.weatherforecast.common;
+package com.karacatech.weatherforecast.realtime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 
 import java.util.Date;
 
-@Entity
-@Table(name = "realtime_weather")
-public class RealtimeWeather {
-    @Id
-    @Column(name = "location_code")
-    @JsonIgnore
-    private String locationCode;
+public class RealtimeWeatherDTO {
 
+    private String location;
     private int temperature;
     private int humidity;
     private int precipitation;
@@ -21,23 +14,17 @@ public class RealtimeWeather {
     @JsonProperty("wind_speed")
     private int windSpeed;
 
-    @Column(length = 50)
     private String status;
 
     @JsonProperty("last_updated")
     private Date lastUpdated;
 
-    @OneToOne
-    @JoinColumn(name = "location_code")
-    @MapsId
-    private Location location;
-
-    public String getLocationCode() {
-        return locationCode;
+    public String getLocation() {
+        return location;
     }
 
-    public void setLocationCode(String locationCode) {
-        this.locationCode = locationCode;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public int getTemperature() {
@@ -86,14 +73,5 @@ public class RealtimeWeather {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.locationCode = location.getCode();
-        this.location = location;
     }
 }

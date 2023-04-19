@@ -141,15 +141,6 @@ public class Location {
 
     @Override
     public String toString() {
-        return "Location{" +
-                "code='" + code + '\'' +
-                ", cityName='" + cityName + '\'' +
-                ", regionName='" + regionName + '\'' +
-                ", countryName='" + countryName + '\'' +
-                ", countryCode='" + countryCode + '\'' +
-                ", realtimeWeather=" + realtimeWeather +
-                ", enabled=" + enabled +
-                ", trashed=" + trashed +
-                '}';
+        return cityName + ", " + (regionName != null ? regionName : "") + ", " + countryName;
     }
 }

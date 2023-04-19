@@ -18,11 +18,12 @@ public class RealtimeWeatherService {
     public RealtimeWeather getByLocation(Location location) {
         String countryCode = location.getCountryCode();
         String cityName = location.getCityName();
+        System.out.println(cityName);
 
         RealtimeWeather realtimeWeather = realtimeWeatherRepository.findByCountryCodeAndCity(countryCode, cityName);
 
         if (realtimeWeather == null) {
-            throw new LocationNotFoundException("Location not found: " + location);
+            throw new LocationNotFoundException("Location not found with the given city name and country code: " + location);
         }
 
         return realtimeWeather;
