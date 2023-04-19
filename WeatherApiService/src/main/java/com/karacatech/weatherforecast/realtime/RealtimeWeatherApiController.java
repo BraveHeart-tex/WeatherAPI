@@ -7,6 +7,7 @@ import com.karacatech.weatherforecast.common.Location;
 import com.karacatech.weatherforecast.common.RealtimeWeather;
 import com.karacatech.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class RealtimeWeatherApiController {
 
     @PutMapping("/{locationCode}")
     public ResponseEntity<?> updateRealtimeWeather(@PathVariable("locationCode") String locationCode,
-                                                   @RequestBody RealtimeWeather realtimeWeatherInRequest) {
+                                                   @RequestBody @Valid RealtimeWeather realtimeWeatherInRequest) {
         try {
             RealtimeWeather updatedRealtimeWeather = realtimeWeatherService.getByLocationCode(locationCode);
 

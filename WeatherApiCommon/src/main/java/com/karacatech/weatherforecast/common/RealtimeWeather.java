@@ -3,6 +3,9 @@ package com.karacatech.weatherforecast.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import java.util.Date;
 
@@ -14,22 +17,32 @@ public class RealtimeWeather {
     @JsonIgnore
     private String locationCode;
 
+    @Range(min = -50, max = 50, message = "Temperature must be between -50 and 50")
     private int temperature;
+
+    @Range(min = 0, max = 100, message = "Humidity must be between 0 and 100")
     private int humidity;
+
+    @Range(min = 0, max = 100, message = "Precipitation must be between 0 and 100")
     private int precipitation;
 
     @JsonProperty("wind_speed")
+    @Range(min = 0, max = 200, message = "Wind speed must be between 0 to 200 km/h")
     private int windSpeed;
 
     @Column(length = 50)
+    @NotBlank(message = "Status cannot be empty")
+    @Length(min = 3, max = 50, message = "Status must be between 3 and 50 characters")
     private String status;
 
     @JsonProperty("last_updated")
+    @JsonIgnore
     private Date lastUpdated;
 
     @OneToOne
     @JoinColumn(name = "location_code")
     @MapsId
+    @JsonIgnore
     private Location location;
 
     public String getLocationCode() {

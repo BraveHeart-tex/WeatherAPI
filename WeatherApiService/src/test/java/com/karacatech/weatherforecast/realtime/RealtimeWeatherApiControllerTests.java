@@ -19,6 +19,7 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -134,6 +135,27 @@ public class RealtimeWeatherApiControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.location", is(location.getCityName() + ", " + location.getRegionName() + ", " + location.getCountryName())))
+                .andDo(print());
+    }
+
+    @Test
+    public void testUpdateShouldReturn400BadRequest() throws Exception {
+        String locationCode = "INVALID_CODE";
+        String requestURI = END_POINT_PATH + "/" + locationCode;
+
+        RealtimeWeather realtimeWeather = new RealtimeWeather();
+        realtimeWeather.setTemperature(133);
+        realtimeWeather.setHumidity(133);
+        realtimeWeather.setPrecipitation(133);
+        realtimeWeather.setStatus("Cloudy");
+        realtimeWeather.setWindSpeed(500);
+
+        String bodyContent = objectMapper.writeValueAsString(realtimeWeather);
+
+        mockMvc.perform(put(requestURI)
+                        .contentType("application/json")
+                        .content(bodyContent))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

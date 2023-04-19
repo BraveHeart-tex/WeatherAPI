@@ -66,7 +66,10 @@ public class RealtimeWeatherRepositoryTests {
     }
     @Test
     public void testFindByTrashedLocationNotFound(){
-        // TODO: ADD TESTS FOR TRASHED LOCATIONS
+        String locationCode = "BOSTON_US";
+        RealtimeWeather realtimeWeather = repository.findByLocationCode(locationCode);
+        assertThat(realtimeWeather).isNotNull();
+        assertThat(realtimeWeather.getLocation().isTrashed()).isFalse();
     }
     @Test
     public void testFindByLocationFound(){
