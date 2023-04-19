@@ -75,7 +75,7 @@ public class RealtimeWeatherApiController {
     public ResponseEntity<?> updateRealtimeWeather(@PathVariable("locationCode") String locationCode,
                                                    @RequestBody @Valid RealtimeWeather realtimeWeatherInRequest) {
         try {
-            RealtimeWeather updatedRealtimeWeather = realtimeWeatherService.getByLocationCode(locationCode);
+            RealtimeWeather updatedRealtimeWeather = realtimeWeatherService.update(locationCode, realtimeWeatherInRequest);
 
             return ResponseEntity.ok(entityToDTO(updatedRealtimeWeather));
         } catch (LocationNotFoundException e) {

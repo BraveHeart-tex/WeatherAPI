@@ -140,7 +140,7 @@ public class RealtimeWeatherApiControllerTests {
 
     @Test
     public void testUpdateShouldReturn400BadRequest() throws Exception {
-        String locationCode = "INVALID_CODE";
+        String locationCode = "BOSTON_US";
         String requestURI = END_POINT_PATH + "/" + locationCode;
 
         RealtimeWeather realtimeWeather = new RealtimeWeather();
@@ -159,4 +159,51 @@ public class RealtimeWeatherApiControllerTests {
                 .andDo(print());
     }
 
+    @Test
+    public void testUpdateShouldReturn404NotFound() throws Exception {
+        String locationCode = "ABC_AD";
+        String requestURI = END_POINT_PATH + "/" + locationCode;
+
+        RealtimeWeather realtimeWeather = new RealtimeWeather();
+        realtimeWeather.setTemperature(12);
+        realtimeWeather.setHumidity(32);
+        realtimeWeather.setPrecipitation(88);
+        realtimeWeather.setStatus("Cloudy");
+        realtimeWeather.setWindSpeed(5);
+
+        Mockito.when(realtimeWeatherService.update(locationCode, realtimeWeather))
+                .thenThrow(LocationNotFoundException.class);
+
+        String bodyContent = objectMapper.writeValueAsString(realtimeWeather);
+
+        mockMvc.perform(put(requestURI)
+                        .contentType("application/json")
+                        .content(bodyContent))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void testUpdateShouldReturn200OK() throws Exception {
+        String locationCode = "BOSTON_US";
+        String requestURI = END_POINT_PATH + "/" + locationCode;
+
+        RealtimeWeather realtimeWeather = new RealtimeWeather();
+        realtimeWeather.setTemperature(24);
+        realtimeWeather.setHumidity(44);
+        realtimeWeather.setPrecipitation(88);
+        realtimeWeather.setStatus("Cloudy");
+        realtimeWeather.setWindSpeed(15);
+
+        Mockito.when(realtimeWeatherService.update(locationCode, realtimeWeather))
+                .thenReturn(realtimeWeather);
+
+        String bodyContent = objectMapper.writeValueAsString(realtimeWeather);
+
+        mockMvc.perform(put(requestURI)
+                        .contentType("application/json")
+                        .content(bodyContent))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }

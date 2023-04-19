@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "realtime_weather")
@@ -108,5 +109,18 @@ public class RealtimeWeather {
     public void setLocation(Location location) {
         this.locationCode = location.getCode();
         this.location = location;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RealtimeWeather that = (RealtimeWeather) o;
+        return Objects.equals(locationCode, that.locationCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(locationCode);
     }
 }
