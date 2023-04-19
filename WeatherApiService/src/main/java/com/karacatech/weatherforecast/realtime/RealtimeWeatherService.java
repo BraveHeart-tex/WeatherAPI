@@ -6,6 +6,8 @@ import com.karacatech.weatherforecast.location.LocationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RealtimeWeatherService {
     private final RealtimeWeatherRepository realtimeWeatherRepository;
@@ -15,17 +17,19 @@ public class RealtimeWeatherService {
         this.realtimeWeatherRepository = realtimeWeatherRepository;
     }
 
-    public RealtimeWeather getByLocation(Location location) {
-        String countryCode = location.getCountryCode();
-        String cityName = location.getCityName();
-        System.out.println(cityName);
+    public RealtimeWeather getByLocation(Location location) throws LocationNotFoundException {
+        return Optional
+                .ofNullable(realtimeWeatherRepository.findByCountryCodeAndCity(location.getCountryCode(), location.getCityName()))
+                .orElseThrow(() -> new LocationNotFoundException(
+                        "Location not found with the given city name and country code: " + location)
+                );
+    }
 
-        RealtimeWeather realtimeWeather = realtimeWeatherRepository.findByCountryCodeAndCity(countryCode, cityName);
-
-        if (realtimeWeather == null) {
-            throw new LocationNotFoundException("Location not found with the given city name and country code: " + location);
-        }
-
-        return realtimeWeather;
+    public RealtimeWeather getByLocationCode(String locationCode) throws LocationNotFoundException {
+        return Optional
+                .ofNullable(realtimeWeatherRepository.findByLocationCode(locationCode))
+                .orElseThrow(() -> new LocationNotFoundException(
+                        "Location not found with the given location code: " + locationCode)
+                );
     }
 }
