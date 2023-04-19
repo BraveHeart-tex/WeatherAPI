@@ -1,5 +1,6 @@
 package com.karacatech.weatherforecast.realtime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -17,6 +18,7 @@ public class RealtimeWeatherDTO {
     private String status;
 
     @JsonProperty("last_updated")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private Date lastUpdated;
 
     public String getLocation() {
