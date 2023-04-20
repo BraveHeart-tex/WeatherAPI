@@ -1,5 +1,7 @@
 package com.karacatech.weatherforecast.location;
 
+import com.karacatech.weatherforecast.common.HourlyWeather;
+import com.karacatech.weatherforecast.common.HourlyWeatherID;
 import com.karacatech.weatherforecast.common.Location;
 
 import com.karacatech.weatherforecast.common.RealtimeWeather;
@@ -91,5 +93,32 @@ public class LocationRepositoryTests {
         Location updatedLocation = repository.save(location);
 
         assertThat(updatedLocation.getRealtimeWeather().getLocationCode()).isEqualTo(locationCode);
+    }
+
+    @Test
+    public void testAddHourlyWeatherData() {
+        Location location = new Location();
+        location.setCode("IST");
+        location.setCityName("Istanbul");
+        location.setRegionName("Europe");
+        location.setCountryCode("TR");
+        location.setCountryName("Turkey");
+        location.setEnabled(true);
+
+        HourlyWeather hourlyWeather = new HourlyWeather();
+        hourlyWeather.setTemperature(10);
+        hourlyWeather.setPrecipitation(50);
+        hourlyWeather.setStatus("Sunny");
+
+        HourlyWeatherID hourlyWeatherID = new HourlyWeatherID();
+        hourlyWeatherID.setLocation(location);
+        hourlyWeatherID.setHourOfDay(10);
+
+        hourlyWeather.setId(hourlyWeatherID);
+
+        assertThat(hourlyWeather).isNotNull();
+        assertThat(hourlyWeather.getStatus()).isEqualTo("Sunny");
+        assertThat(hourlyWeather.getTemperature()).isEqualTo(10);
+        assertThat(hourlyWeather.getPrecipitation()).isEqualTo(50);
     }
 }
