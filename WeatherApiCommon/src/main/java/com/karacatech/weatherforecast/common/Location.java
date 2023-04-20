@@ -149,11 +149,16 @@ public class Location {
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, cityName, regionName, countryName, countryCode, realtimeWeather, enabled, trashed);
+        return Objects.hash(code, cityName, regionName, countryName, countryCode, realtimeWeather, listHourlyWeather, enabled, trashed);
     }
 
     @Override
     public String toString() {
         return cityName + ", " + (regionName != null ? regionName + ", " : "") + countryName;
+    }
+
+    public Location code(String code) {
+        setCode(code);
+        return this;
     }
 }

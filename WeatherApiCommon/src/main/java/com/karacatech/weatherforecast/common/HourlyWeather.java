@@ -71,6 +71,11 @@ public class HourlyWeather {
         return this;
     }
 
+    public HourlyWeather hourOfDay(int hour) {
+        this.id.setHourOfDay(hour);
+        return this;
+    }
+
     public HourlyWeather id(Location location, int hour) {
         this.id.setHourOfDay(hour);
         this.id.setLocation(location);

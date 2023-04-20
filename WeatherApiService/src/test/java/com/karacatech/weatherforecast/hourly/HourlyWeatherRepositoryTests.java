@@ -1,0 +1,62 @@
+package com.karacatech.weatherforecast.hourly;
+
+import com.karacatech.weatherforecast.common.HourlyWeather;
+import com.karacatech.weatherforecast.common.Location;
+import com.karacatech.weatherforecast.location.HourlyWeatherRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Rollback(false)
+public class HourlyWeatherRepositoryTests {
+
+    @Autowired
+    private HourlyWeatherRepository hourlyWeatherRepository;
+
+    @Test
+    public void testAdd() {
+        String locationCode = "IST_TR";
+        int hourOfDay = 12;
+
+        Location location = new Location().code(locationCode);
+
+        HourlyWeather forecast = new HourlyWeather()
+                .location(location)
+                .hourOfDay(hourOfDay)
+                .temperature(10)
+                .precipitation(15)
+                .status("Sunny");
+
+        HourlyWeather updatedForecast = hourlyWeatherRepository.save(forecast);
+
+        assertThat(updatedForecast).isNotNull();
+        assertThat(updatedForecast.getId().getLocation().getCode()).isEqualTo(locationCode);
+        assertThat(updatedForecast.getId().getHourOfDay()).isEqualTo(hourOfDay);
+    }
+
+    @Test
+    public void testDelete() {
+        String locationCode = "IST_TR";
+        int hourOfDay = 12;
+
+        Location location = new Location().code(locationCode);
+
+        HourlyWeather forecast = new HourlyWeather()
+                .location(location)
+                .hourOfDay(hourOfDay)
+                .temperature(10)
+                .precipitation(15)
+                .status("Sunny");
+
+        hourlyWeatherRepository.delete(forecast);
+
+        HourlyWeather hourlyWeather = hourlyWeatherRepository.findById(forecast.getId()).orElse(null);
+        assertThat(hourlyWeather).isNull();
+    }
+}
