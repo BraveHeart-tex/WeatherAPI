@@ -1,7 +1,6 @@
 package com.karacatech.weatherforecast.location;
 
 import com.karacatech.weatherforecast.common.HourlyWeather;
-import com.karacatech.weatherforecast.common.HourlyWeatherID;
 import com.karacatech.weatherforecast.common.Location;
 
 import com.karacatech.weatherforecast.common.RealtimeWeather;
@@ -22,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LocationRepositoryTests {
 
     @Autowired
-    private LocationRepository repository;
+    private LocationRepository locationRepository;
 
     @Test
     public void testAddSuccess() {
@@ -34,7 +33,7 @@ public class LocationRepositoryTests {
         location.setCountryName("Turkey");
         location.setEnabled(true);
 
-        Location savedLocation = repository.save(location);
+        Location savedLocation = locationRepository.save(location);
 
         assertThat(savedLocation).isNotNull();
         assertThat(savedLocation.getCode()).isEqualTo("IST");
@@ -42,7 +41,7 @@ public class LocationRepositoryTests {
 
     @Test
     public void testListSuccess() {
-        List<Location> untrashedLocations = repository.findUntrashed();
+        List<Location> untrashedLocations = locationRepository.findUntrashed();
         assertThat(untrashedLocations).isNotEmpty();
         untrashedLocations.forEach(System.out::println);
     }
@@ -50,14 +49,14 @@ public class LocationRepositoryTests {
     @Test
     public void testGetNotFound() {
         String code = "ABCD";
-        Location location = repository.findByCode(code);
+        Location location = locationRepository.findByCode(code);
         assertThat(location).isNull();
     }
 
     @Test
     public void testGetFound() {
         String code = "NYC_USA";
-        Location location = repository.findByCode(code);
+        Location location = locationRepository.findByCode(code);
         assertThat(location).isNotNull();
         assertThat(location.getCode()).isEqualTo(code);
     }
@@ -65,15 +64,15 @@ public class LocationRepositoryTests {
     @Test
     public void testTrashSuccess() {
         String code = "IST";
-        repository.trashByCode(code);
-        Location location = repository.findByCode(code);
+        locationRepository.trashByCode(code);
+        Location location = locationRepository.findByCode(code);
         assertThat(location).isNull();
     }
 
     @Test
     public void testAddRealtimeWeatherData() {
         String locationCode = "BOSTON_US";
-        Location location = repository.findByCode(locationCode);
+        Location location = locationRepository.findByCode(locationCode);
 
         RealtimeWeather realtimeWeather = location.getRealtimeWeather();
 
@@ -90,35 +89,34 @@ public class LocationRepositoryTests {
         realtimeWeather.setWindSpeed(10);
         realtimeWeather.setLastUpdated(new Date());
 
-        Location updatedLocation = repository.save(location);
+        Location updatedLocation = locationRepository.save(location);
 
         assertThat(updatedLocation.getRealtimeWeather().getLocationCode()).isEqualTo(locationCode);
     }
 
     @Test
     public void testAddHourlyWeatherData() {
-        Location location = new Location();
-        location.setCode("IST");
-        location.setCityName("Istanbul");
-        location.setRegionName("Europe");
-        location.setCountryCode("TR");
-        location.setCountryName("Turkey");
-        location.setEnabled(true);
+        Location location = locationRepository.findById("IST_TR").get();
 
-        HourlyWeather hourlyWeather = new HourlyWeather();
-        hourlyWeather.setTemperature(10);
-        hourlyWeather.setPrecipitation(50);
-        hourlyWeather.setStatus("Sunny");
+        List<HourlyWeather> listHourlyWeather = location.getListHourlyWeather();
 
-        HourlyWeatherID hourlyWeatherID = new HourlyWeatherID();
-        hourlyWeatherID.setLocation(location);
-        hourlyWeatherID.setHourOfDay(10);
+        HourlyWeather forecastOne = new HourlyWeather().id(location, 8)
+                .temperature(7)
+                .precipitation(10)
+                .status("Cold");
 
-        hourlyWeather.setId(hourlyWeatherID);
+        HourlyWeather forecastTwo = new HourlyWeather()
+                .location(location)
+                .temperature(5)
+                .precipitation(8)
+                .status("Cold");
 
-        assertThat(hourlyWeather).isNotNull();
-        assertThat(hourlyWeather.getStatus()).isEqualTo("Sunny");
-        assertThat(hourlyWeather.getTemperature()).isEqualTo(10);
-        assertThat(hourlyWeather.getPrecipitation()).isEqualTo(50);
+        listHourlyWeather.add(forecastOne);
+        listHourlyWeather.add(forecastTwo);
+
+        Location updatedLocation = locationRepository.save(location);
+
+        assertThat(updatedLocation.getListHourlyWeather()).isNotEmpty();
+        assertThat(updatedLocation.getListHourlyWeather().size()).isEqualTo(2);
     }
 }
