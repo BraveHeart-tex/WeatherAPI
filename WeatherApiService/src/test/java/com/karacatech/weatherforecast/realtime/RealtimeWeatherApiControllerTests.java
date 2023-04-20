@@ -195,15 +195,29 @@ public class RealtimeWeatherApiControllerTests {
         realtimeWeather.setStatus("Cloudy");
         realtimeWeather.setWindSpeed(15);
 
+        Location location = new Location();
+        location.setCode(locationCode);
+        location.setCityName("Boston");
+        location.setRegionName("Massachusetts");
+        location.setCountryName("United States of America");
+        location.setCountryCode("US");
+
+        realtimeWeather.setLocation(location);
+        location.setRealtimeWeather(realtimeWeather);
+
         Mockito.when(realtimeWeatherService.update(locationCode, realtimeWeather))
                 .thenReturn(realtimeWeather);
 
         String bodyContent = objectMapper.writeValueAsString(realtimeWeather);
 
+        String expectedLocation = location.getCityName() + ", " + location.getRegionName() + ", " + location.getCountryName();
+
+
         mockMvc.perform(put(requestURI)
                         .contentType("application/json")
                         .content(bodyContent))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.location", is(expectedLocation)))
                 .andDo(print());
     }
 }
