@@ -1,5 +1,6 @@
 package com.karacatech.weatherforecast;
 
+import com.karacatech.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -49,6 +50,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         error.setTimestamp(new Date());
         error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.addError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        error.setPath(request.getServletPath());
+
+        LOGGER.error(ex.getMessage(), ex);
+
+        return error;
+    }
+
+    @ExceptionHandler(LocationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDTO handleLocationNotFoundException(HttpServletRequest request, Exception ex) {
+        ErrorDTO error = new ErrorDTO();
+
+        error.setTimestamp(new Date());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
         error.addError(HttpStatus.BAD_REQUEST.getReasonPhrase());
         error.setPath(request.getServletPath());
 

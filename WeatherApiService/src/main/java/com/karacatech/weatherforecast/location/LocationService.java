@@ -26,7 +26,13 @@ public class LocationService {
     }
 
     public Location getByCode(String code) {
-        return locationRepository.findByCode(code);
+        Location location = locationRepository.findByCode(code);
+
+        if (location == null) {
+            throw new LocationNotFoundException(code);
+        }
+
+        return location;
     }
 
     public Location update(Location locationInRequest) {
@@ -35,7 +41,7 @@ public class LocationService {
         Location locationInDB = locationRepository.findByCode(code);
 
         if (locationInDB == null) {
-            throw new LocationNotFoundException("No location found with the given code: " + code);
+            throw new LocationNotFoundException(code);
         }
 
         locationInDB.setCityName(locationInRequest.getCityName());
@@ -51,7 +57,7 @@ public class LocationService {
         Location location = locationRepository.findByCode(code);
 
         if (location == null) {
-            throw new LocationNotFoundException("No location found with the given code: " + code);
+            throw new LocationNotFoundException(code);
         }
 
         locationRepository.trashByCode(code);
