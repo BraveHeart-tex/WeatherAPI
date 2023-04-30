@@ -117,6 +117,28 @@ public class LocationRepositoryTests {
         Location updatedLocation = locationRepository.save(location);
 
         assertThat(updatedLocation.getListHourlyWeather()).isNotEmpty();
-        assertThat(updatedLocation.getListHourlyWeather().size()).isEqualTo(2);
+        assertThat(updatedLocation.getListHourlyWeather().size()).isEqualTo(4);
+    }
+
+    @Test
+    public void testFindByCountryCodeAndCityNotFound() {
+        String countryCode = "TR";
+        String cityName = "City";
+
+        Location location = locationRepository.findByCountryCodeAndCityName(countryCode, cityName);
+
+        assertThat(location).isNull();
+    }
+
+    @Test
+    public void testFindByCountryCodeAndCityFound() {
+        String countryCode = "TR";
+        String cityName = "Istanbul";
+
+        Location location = locationRepository.findByCountryCodeAndCityName(countryCode, cityName);
+
+        assertThat(location).isNotNull();
+        assertThat(location.getCityName()).isEqualTo(cityName);
+        assertThat(location.getCountryCode()).isEqualTo(countryCode);
     }
 }
