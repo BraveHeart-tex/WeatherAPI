@@ -81,4 +81,14 @@ public class HourlyWeather {
         this.id.setLocation(location);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "HourlyWeather{" +
+                "hourOfDay=" + id.getHourOfDay() +
+                ", temperature=" + temperature +
+                ", precipitation=" + precipitation +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

@@ -1,6 +1,7 @@
 package com.karacatech.weatherforecast;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +40,45 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return error;
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleBadRequestException(HttpServletRequest request, Exception ex) {
+        ErrorDTO error = new ErrorDTO();
+
+        error.setTimestamp(new Date());
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.addError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        error.setPath(request.getServletPath());
+
+        LOGGER.error(ex.getMessage(), ex);
+
+        return error;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleConstraintViolationException(HttpServletRequest request, Exception ex) {
+        ErrorDTO error = new ErrorDTO();
+
+        ConstraintViolationException violationException = (ConstraintViolationException) ex;
+
+        error.setTimestamp(new Date());
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.addError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        error.setPath(request.getServletPath());
+
+        violationException.getConstraintViolations().forEach(violation -> {
+            error.addError(violation.getPropertyPath() + ": " + violation.getMessage());
+        });
+
+        LOGGER.error(ex.getMessage(), ex);
+
+        return error;
+    }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,

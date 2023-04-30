@@ -6,6 +6,7 @@ import com.karacatech.weatherforecast.location.LocationNotFoundException;
 import com.karacatech.weatherforecast.location.LocationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -34,5 +35,16 @@ public class HourlyWeatherService {
 
     public List<HourlyWeather> getByLocationCode(String locationCode, int currentHour) {
         return hourlyWeatherRepository.findByLocationCode(locationCode, currentHour);
+    }
+
+    public List<HourlyWeather> updateByLocationCode(String locationCode,
+                                                    List<HourlyWeather> hourlyWeatherForecastInRequest) {
+        Location location = locationRepository.findByCode(locationCode);
+
+        if (location == null) {
+            throw new LocationNotFoundException("Location not found with the provided location code: " + locationCode);
+        }
+
+        return Collections.emptyList();
     }
 }

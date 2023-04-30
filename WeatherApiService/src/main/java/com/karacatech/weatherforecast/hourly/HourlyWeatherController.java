@@ -1,5 +1,6 @@
 package com.karacatech.weatherforecast.hourly;
 
+import com.karacatech.weatherforecast.BadRequestException;
 import com.karacatech.weatherforecast.CommonUtility;
 import com.karacatech.weatherforecast.GeolocationException;
 import com.karacatech.weatherforecast.GeolocationService;
@@ -7,43 +8,29 @@ import com.karacatech.weatherforecast.common.HourlyWeather;
 import com.karacatech.weatherforecast.common.Location;
 import com.karacatech.weatherforecast.location.LocationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("api/v1/hourly")
+@Validated
 public class HourlyWeatherController {
     private final GeolocationService geolocationService;
     private final HourlyWeatherService hourlyWeatherService;
-    private final ModelMapper modelMapper;
 
     public HourlyWeatherController(GeolocationService geolocationService,
-                                   HourlyWeatherService hourlyWeatherService,
-                                   ModelMapper modelMapper) {
+                                   HourlyWeatherService hourlyWeatherService) {
         this.geolocationService = geolocationService;
         this.hourlyWeatherService = hourlyWeatherService;
-        this.modelMapper = modelMapper;
     }
 
-    private HourlyWeatherListDTO listEntityToDTO(List<HourlyWeather> hourlyWeather) {
-        Location location = hourlyWeather.get(0).getId().getLocation();
-
-        HourlyWeatherListDTO resultDTO = new HourlyWeatherListDTO();
-        resultDTO.setLocation(location.toString());
-
-        hourlyWeather.forEach(forecast -> {
-            HourlyWeatherDTO hourlyWeatherDTO = modelMapper.map(forecast, HourlyWeatherDTO.class);
-            resultDTO.addWeatherHourlyDTO(hourlyWeatherDTO);
-        });
-
-        return resultDTO;
-    }
 
     @GetMapping
     public ResponseEntity<?> listHourlyForecastByIPAddress(HttpServletRequest request) {
@@ -60,7 +47,7 @@ public class HourlyWeatherController {
             if (hourlyForecast.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-            return ResponseEntity.ok(listEntityToDTO(hourlyForecast));
+            return ResponseEntity.ok(CommonUtility.listEntityToDTO(hourlyForecast));
 
         } catch (NumberFormatException | GeolocationException ex) {
             return ResponseEntity.badRequest().build();
@@ -81,10 +68,31 @@ public class HourlyWeatherController {
                 return ResponseEntity.noContent().build();
             }
 
-            return ResponseEntity.ok(listEntityToDTO(hourlyForecast));
+            return ResponseEntity.ok(CommonUtility.listEntityToDTO(hourlyForecast));
 
         } catch (NumberFormatException ex) {
             return ResponseEntity.badRequest().build();
+        } catch (LocationNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{locationCode}")
+    public ResponseEntity<?> updateHourlyForecastByLocationCode(@PathVariable String locationCode,
+                                                                @RequestBody @Valid List<HourlyWeatherDTO> listDTO) throws BadRequestException {
+        if (listDTO.isEmpty()) {
+            throw new BadRequestException("The request body is empty. Please provide hourly weather forecast data");
+        }
+
+
+        List<HourlyWeather> listHourlyWeather = CommonUtility.listDTOToEntity(listDTO);
+
+        listHourlyWeather.forEach(System.out::println);
+
+        try {
+            List<HourlyWeather> updatedHourlyWeather = hourlyWeatherService.updateByLocationCode(locationCode, listHourlyWeather);
+
+            return ResponseEntity.ok(CommonUtility.listEntityToDTO(updatedHourlyWeather));
         } catch (LocationNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }

@@ -1,5 +1,6 @@
 package com.karacatech.weatherforecast.hourly;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karacatech.weatherforecast.GeolocationException;
 import com.karacatech.weatherforecast.GeolocationService;
@@ -14,11 +15,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.contains;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,6 +36,9 @@ public class HourlyWeatherControllerTest {
 
     @MockBean
     private HourlyWeatherService hourlyWeatherService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     GeolocationService geolocationService;
@@ -168,6 +175,75 @@ public class HourlyWeatherControllerTest {
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.location", is(location.toString())))
                 .andExpect(jsonPath("$.hourly_forecast[0].hour_of_day", is(12)))
+                .andDo(print());
+    }
+
+    @Test
+    public void testUpdateByLocationCodeShouldReturn400BadRequestBecauseNoData() throws JsonProcessingException, Exception {
+        String requestUrl = END_POINT + "/IST_TR";
+
+        List<HourlyWeatherDTO> listDTO = Collections.emptyList();
+
+        String requestBody = objectMapper.writeValueAsString(listDTO);
+
+        mockMvc.perform(put(requestUrl)
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]", is("Bad Request")))
+                .andDo(print());
+    }
+
+    @Test
+    public void testUpdateByLocationCodeShouldReturn400BadRequestBecauseInvalidData() throws Exception {
+        String requestUrl = END_POINT + "/IST_TR";
+
+
+        HourlyWeatherDTO forecast1 = new HourlyWeatherDTO()
+                .hourOfDay(12)
+                .temperature(133)
+                .precipitation(0)
+                .status("Cloudy");
+
+        HourlyWeatherDTO forecast2 = new HourlyWeatherDTO()
+                .hourOfDay(14)
+                .temperature(155)
+                .precipitation(0)
+                .status("");
+
+        List<HourlyWeatherDTO> listDTO = List.of(forecast1, forecast2);
+
+        String requestBody = objectMapper.writeValueAsString(listDTO);
+
+        mockMvc.perform(put(requestUrl)
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    public void testUpdateByLocationCodeShouldReturn404NotFound() throws Exception {
+        String locationCode = "IST_TR";
+        String requestUrl = END_POINT + "/" + locationCode;
+
+        Mockito.when(hourlyWeatherService.updateByLocationCode(Mockito.anyString(), Mockito.anyList()))
+                .thenThrow(LocationNotFoundException.class);
+
+        HourlyWeatherDTO forecast1 = new HourlyWeatherDTO()
+                .hourOfDay(12)
+                .temperature(15)
+                .precipitation(0)
+                .status("Cloudy");
+
+        List<HourlyWeatherDTO> listDTO = List.of(forecast1);
+
+        String requestBody = objectMapper.writeValueAsString(listDTO);
+
+        mockMvc.perform(put(requestUrl)
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 }
