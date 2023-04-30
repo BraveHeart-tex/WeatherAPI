@@ -6,6 +6,7 @@ import com.karacatech.weatherforecast.location.LocationNotFoundException;
 import com.karacatech.weatherforecast.location.LocationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,6 +46,23 @@ public class HourlyWeatherService {
             throw new LocationNotFoundException("Location not found with the provided location code: " + locationCode);
         }
 
-        return Collections.emptyList();
+        for (HourlyWeather hourlyWeather : hourlyWeatherForecastInRequest) {
+            hourlyWeather.getId().setLocation(location);
+        }
+
+        List<HourlyWeather> hourlyWeatherInDB = location.getListHourlyWeather();
+        List<HourlyWeather> hourlyWeatherToBeRemoved = new ArrayList<>();
+
+        for (HourlyWeather item : hourlyWeatherInDB) {
+            if (!hourlyWeatherForecastInRequest.contains(item)) {
+                hourlyWeatherToBeRemoved.add(item.getShallowCopy());
+            }
+        }
+
+        for (HourlyWeather item : hourlyWeatherToBeRemoved) {
+            hourlyWeatherInDB.remove(item);
+        }
+
+        return (List<HourlyWeather>) hourlyWeatherRepository.saveAll(hourlyWeatherForecastInRequest);
     }
 }

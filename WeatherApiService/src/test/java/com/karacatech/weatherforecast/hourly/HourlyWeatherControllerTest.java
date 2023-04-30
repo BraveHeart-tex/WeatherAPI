@@ -246,4 +246,60 @@ public class HourlyWeatherControllerTest {
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
+
+    @Test
+    public void testUpdateByLocationCodeShouldReturn200OK() throws Exception {
+        String locationCode = "IST_TR";
+        String requestUrl = END_POINT + "/" + locationCode;
+
+        HourlyWeatherDTO dto1 = new HourlyWeatherDTO()
+                .hourOfDay(12)
+                .temperature(15)
+                .precipitation(0)
+                .status("Cloudy");
+
+        HourlyWeatherDTO dto2 = new HourlyWeatherDTO()
+                .hourOfDay(15)
+                .temperature(13)
+                .precipitation(2)
+                .status("Cloudy");
+
+        Location location = new Location();
+        location.setCode(locationCode);
+        location.setCityName("Istanbul");
+        location.setCountryName("Turkey");
+        location.setCountryCode("TR");
+        location.setRegionName("Istanbul");
+
+        HourlyWeather forecast1 = new HourlyWeather()
+                .location(location)
+                .hourOfDay(12)
+                .temperature(15)
+                .precipitation(0)
+                .status("Cloudy");
+
+        HourlyWeather forecast2 = new HourlyWeather()
+                .location(location)
+                .hourOfDay(15)
+                .temperature(13)
+                .precipitation(2)
+                .status("Cloudy");
+
+        var hourlyForecast = List.of(forecast1, forecast2);
+
+        List<HourlyWeatherDTO> listDTO = List.of(dto1, dto2);
+
+        String requestBody = objectMapper.writeValueAsString(listDTO);
+
+        Mockito.when(hourlyWeatherService.updateByLocationCode(Mockito.anyString(), Mockito.anyList()))
+                .thenReturn(hourlyForecast);
+
+        mockMvc.perform(put(requestUrl)
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.location", is(location.toString())))
+                .andExpect(jsonPath("$.hourly_forecast[0].hour_of_day", is(12)))
+                .andDo(print());
+    }
 }
