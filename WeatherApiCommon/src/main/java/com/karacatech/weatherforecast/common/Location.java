@@ -16,31 +16,22 @@ public class Location {
 
     @Column(length = 12, nullable = false, unique = true)
     @Id
-    @NotNull(message = "Location code cannot be null")
-    @Length(min = 3, max = 12, message = "Location code must be between 3 and 12 characters")
     private String code;
 
     @Column(length = 128, nullable = false)
     @JsonProperty("city_name")
-    @NotNull(message = "City name cannot be null")
-    @Length(min = 3, max = 128, message = "City name must be between 3 and 128 characters")
     private String cityName;
 
     @Column(length = 128)
     @JsonProperty("region_name")
-    @Length(min = 3, max = 128, message = "Region name must be between 3 and 128 characters")
     private String regionName;
 
     @Column(length = 64, nullable = false)
     @JsonProperty("country_name")
-    @NotNull(message = "Country name cannot be null")
-    @Length(min = 3, max = 64, message = "Country name must be between 3 and 64 characters")
     private String countryName;
 
     @Column(length = 2, nullable = false)
     @JsonProperty("country_code")
-    @NotNull(message = "Country code cannot be null")
-    @Length(min = 2, max = 2, message = "Country code must be 2 characters")
     private String countryCode;
 
     @OneToOne(mappedBy = "location", cascade = CascadeType.ALL)
@@ -53,7 +44,6 @@ public class Location {
 
     private boolean enabled;
 
-    @JsonIgnore
     private boolean trashed;
 
     public Location() {
